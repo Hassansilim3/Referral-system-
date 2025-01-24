@@ -1,41 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Referral Link</title>
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Link</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
 
-    .link-container {
-      margin-top: 20px;
-    }
+        .link-container {
+            margin-top: 20px;
+        }
 
-    a {
-      color: white;
-      background-color: #4caf50;
-      padding: 10px 20px;
-      text-decoration: none;
-      border-radius: 5px;
-    }
+        a {
+            color: white;
+            background-color: #4caf50;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
 
-    a:hover {
-      background-color: #45a049;
-    }
-  </style>
+        a:hover {
+            background-color: #45a049;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            color: white;
+            background-color: #008cba;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #007bb5;
+        }
+    </style>
 </head>
 <body>
-  <h1>Welcome to the Referral System</h1>
-  <p>Your unique referral link is:</p>
-  <div class="link-container">
-    <a id="referralLink" href="#" target="_blank">Generate Link</a>
-  </div>
+    <h1>Welcome to the Referral System</h1>
+    <p>Your unique referral link is:</p>
+    <div class="link-container">
+        <a id="referralLink" href="#" target="_blank">Generate Link</a>
+    </div>
+    <button id="copyButton">Copy Link</button>
 
-  <script src="script.js"></script>
+    <script>
+        // استخراج معرف المستخدم (user_id) من Telegram Web App
+        window.onload = function() {
+            // تحقق من وجود Telegram Web App
+            if (window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+
+                // احصل على معرف المستخدم
+                const userId = tg.initDataUnsafe?.user?.id;
+
+                if (userId) {
+                    // بناء رابط الإحالة باستخدام userId
+                    const botUsername = "hassansilim267BOT";
+                    const referralLink = `https://t.me/${botUsername}?start=${userId}`;
+
+                    // تحديث الرابط في HTML
+                    const referralAnchor = document.getElementById("referralLink");
+                    referralAnchor.href = referralLink;
+                    referralAnchor.textContent = referralLink;
+
+                    // إضافة وظيفة نسخ الرابط
+                    const copyButton = document.getElementById("copyButton");
+                    copyButton.addEventListener("click", function() {
+                        navigator.clipboard.writeText(referralLink).then(function() {
+                            alert("Referral link copied to clipboard!");
+                        }, function(err) {
+                            console.error('Could not copy text: ', err);
+                        });
+                    });
+                } else {
+                    alert("Unable to retrieve user ID. Please try again from Telegram.");
+                }
+            } else {
+                alert("Please open this page within Telegram Web App.");
+            }
+        };
+    </script>
 </body>
 </html>
