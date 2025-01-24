@@ -4,82 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Referral Link</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f4f4f4;
-    }
-
-    .container {
       text-align: center;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 50px;
     }
 
-    #referral-link {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      text-align: center;
-    }
-
-    #copy-button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    #copy-button:hover {
-      background-color: #45a049;
-    }
-
-    #referrals-count {
+    .link-container {
       margin-top: 20px;
-      font-size: 18px;
+    }
+
+    a {
+      color: white;
+      background-color: #4caf50;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    a:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Your Referral Link</h1>
-    <input type="text" id="referral-link" readonly>
-    <button id="copy-button">Copy</button>
-    <p id="referrals-count">You have invited: <span id="referral-count">0</span> people</p>
+  <h1>Welcome to the Referral System</h1>
+  <p>Your unique referral link is:</p>
+  <div class="link-container">
+    <a id="referralLink" href="#" target="_blank">Generate Link</a>
   </div>
 
-  <script>
-    // Get user ID from Telegram bot
-    const userId = new URLSearchParams(window.location.search).get('userId') || 'default_user';
-    const referralLink = `https://t.me/hassansilim267BOT?start=${userId}`;
-    const referralLinkElement = document.getElementById("referral-link");
-    referralLinkElement.value = referralLink;
-
-    // Copy link to clipboard
-    document.getElementById('copy-button').addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(referralLink);
-        alert('Referral link copied to clipboard!');
-      } catch (err) {
-        console.error('Failed to copy text: ', err);
-      }
-    });
-
-    // This section has been removed as it is related to Firebase Firestore
-  </script>
+  <script src="script.js"></script>
 </body>
-  </html>
+</html>
