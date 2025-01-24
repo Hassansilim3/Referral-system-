@@ -12,30 +12,72 @@
       margin-top: 50px;
     }
 
-    .link-container {
+    .container {
       margin-top: 20px;
     }
 
-    a {
-      color: white;
-      background-color: #4caf50;
-      padding: 10px 20px;
-      text-decoration: none;
+    .referral-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 20px auto;
+      width: 80%;
+    }
+
+    .referral-box input {
+      width: 70%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
       border-radius: 5px;
     }
 
-    a:hover {
+    .referral-box button {
+      padding: 10px 15px;
+      font-size: 16px;
+      color: white;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .referral-box button:hover {
       background-color: #45a049;
+    }
+
+    .stats-box {
+      margin-top: 30px;
+      font-size: 18px;
+    }
+
+    .stats-box span {
+      font-weight: bold;
+      color: #4caf50;
     }
   </style>
 </head>
 <body>
   <h1>Welcome to the Referral System</h1>
   <p>Your unique referral link is:</p>
-  <div class="link-container">
-    <a id="referralLink" href="#" target="_blank">Generate Link</a>
+
+  <!-- مربع رابط الإحالة -->
+  <div class="container">
+    <div class="referral-box">
+      <input type="text" id="referralLink" readonly>
+      <button id="copyButton">Copy</button>
+    </div>
   </div>
 
+  <!-- مربع عدد الأشخاص المدعوين -->
+  <div class="stats-box">
+    <p>You have referred <span id="referralCount">0</span> people.</p>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
