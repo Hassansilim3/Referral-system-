@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Referral Link</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -53,64 +53,33 @@
       font-size: 18px;
     }
   </style>
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Your Referral Link</h1>
-    <input type="text" id="referral-link" />
+    <input type="text" id="referral-link" readonly>
     <button id="copy-button">Copy</button>
     <p id="referrals-count">You have invited: <span id="referral-count">0</span> people</p>
   </div>
 
   <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBekcFYAivjH934l0t0Z7bAILFcpghJ4Us",
-      authDomain: "trex-b4169.firebaseapp.com",
-      projectId: "trex-b4169",
-      storageBucket: "trex-b4169.firebasestorage.app",
-      messagingSenderId: "341755000409",
-      appId: "1:341755000409:web:2dd2922673392b47d4e348",
-      measurementId: "G-C5CMEE3W9E"
-    };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
     // Get user ID from Telegram bot
     const userId = new URLSearchParams(window.location.search).get('userId') || 'default_user';
     const referralLink = `https://t.me/hassansilim267BOT?start=${userId}`;
-
-    // Update referral link in the input box
-    const referralInput = document.getElementById('referral-link');
-    referralInput.value = referralLink;
+    const referralLinkElement = document.getElementById("referral-link");
+    referralLinkElement.value = referralLink;
 
     // Copy link to clipboard
-    document.getElementById('copy-button').addEventListener('click', () => {
-      referralInput.select();
-      document.execCommand('copy');
-      alert('Referral link copied to clipboard!');
-    });
-
-    // Firestore document reference
-    const docRef = db.collection("Trex").doc(userId);
-
-    // Get referrals count from Firestore
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        document.getElementById('referral-count').textContent = data.referrals || 0;
-      } else {
-        // If no data exists, create a new document
-        docRef.set({ userId: userId, referrals: 0 });
+    document.getElementById('copy-button').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(referralLink);
+        alert('Referral link copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
       }
-    }).catch((error) => {
-      console.error("Error fetching document: ", error);
     });
+
+    // This section has been removed as it is related to Firebase Firestore
   </script>
 </body>
-</html>
+  </html>
