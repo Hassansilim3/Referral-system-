@@ -51,6 +51,8 @@
     </div>
     <button id="copyButton">Copy Link</button>
 
+    <p>Your current score is: <span id="score">0</span></p>
+
     <script>
         // استخراج معرف المستخدم (user_id) من Telegram Web App
         window.onload = function() {
@@ -71,6 +73,20 @@
                     referralAnchor.href = referralLink;
                     referralAnchor.textContent = referralLink;
 
+                    // جلب النقاط الحالية للمستخدم
+                    fetch(`https://example.com/api/get-score?userId=${userId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById("score").textContent = data.score;
+                            } else {
+                                alert('Failed to fetch score.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
                     // إضافة وظيفة نسخ الرابط
                     const copyButton = document.getElementById("copyButton");
                     copyButton.addEventListener("click", function() {
@@ -80,6 +96,9 @@
                             console.error('Could not copy text: ', err);
                         });
                     });
+
+                    // التحقق من استخدام رابط الإحالة وإضافة نقطة
+                    checkReferralLink(userId);
                 } else {
                     alert("Unable to retrieve user ID. Please try again from Telegram.");
                 }
@@ -87,6 +106,35 @@
                 alert("Please open this page within Telegram Web App.");
             }
         };
+
+        // التحقق من استخدام رابط الإحالة وإضافة نقطة
+        function checkReferralLink(referrerId) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referredId = urlParams.get('start');
+
+            if (referredId && referredId !== referrerId) {
+                // تحديث النقاط عبر API
+                fetch('https://example.com/api/add-point', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: referrerId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('You have earned a point!');
+                        document.getElementById("score").textContent = data.newScore;
+                    } else {
+                        alert('Failed to add point.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
     </script>
 </body>
 </html>
