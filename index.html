@@ -25,7 +25,12 @@
       // الحصول على معرف المستخدم من Telegram Web App
       const userId = tg.initDataUnsafe.user?.id || "unknown";
       const botUsername = "hassansilim267BOT"; // معرف البوت الخاص بك
-      const referralLink = `https://t.me/${botUsername}?start=${userId}`;
+
+      // إزالة الـ@ من اسم المستخدم قبل إنشاء الرابط
+      const cleanUsername = botUsername.replace('@', ''); 
+
+      // إنشاء رابط الدعوة بدون الـ@
+      const referralLink = `https://t.me/${cleanUsername}?start=${userId}`;
       document.getElementById("referralLink").value = referralLink;
 
       // نسخ الرابط عند الضغط على الزر
