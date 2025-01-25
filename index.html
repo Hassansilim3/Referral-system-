@@ -1,140 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referral Link</title>
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Referral Link Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            margin: 20px;
+            background-color: #f5f5f5;
         }
-
-        .link-container {
-            margin-top: 20px;
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
-        a {
-            color: white;
-            background-color: #4caf50;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
+        .box {
+            margin: 10px 0;
         }
-
-        a:hover {
-            background-color: #45a049;
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-
         button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            color: white;
-            background-color: #008cba;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
-            background-color: #007bb5;
+            background-color: #45a049;
+        }
+        .count {
+            font-size: 18px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to the Referral System</h1>
-    <p>Your unique referral link is:</p>
-    <div class="link-container">
-        <a id="referralLink" href="#" target="_blank">Generate Link</a>
+
+<div class="container">
+    <h2>Referral Link Generator</h2>
+    <div class="box">
+        <label>Your Referral Link:</label>
+        <input type="text" id="referral-link" readonly>
+        <button id="copy-btn">Copy</button>
     </div>
-    <button id="copyButton">Copy Link</button>
+    <div class="box">
+        <label>Total Referrals:</label>
+        <p class="count" id="referral-count">0</p>
+    </div>
+</div>
 
-    <p>Your current score is: <span id="score">0</span></p>
+<script>
+    // تحديد معرف المستخدم
+    const userId = "123456"; // ضع معرف المستخدم الخاص بك هنا
 
-    <script>
-        // استخراج معرف المستخدم (user_id) من Telegram Web App
-        window.onload = function() {
-            // تحقق من وجود Telegram Web App
-            if (window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
+    // إنشاء رابط الإحالة
+    const referralLinkElement = document.getElementById("referral-link");
+    const referralLink = `https://t.me/hassansilim267BOT?start=${userId}`;
+    referralLinkElement.value = referralLink;
 
-                // احصل على معرف المستخدم
-                const userId = tg.initDataUnsafe?.user?.id;
+    // وظيفة النسخ
+    const copyButton = document.getElementById("copy-btn");
+    copyButton.addEventListener("click", () => {
+        referralLinkElement.select();
+        document.execCommand("copy");
+        alert("Referral link copied!");
+    });
 
-                if (userId) {
-                    // بناء رابط الإحالة باستخدام userId
-                    const botUsername = "hassansilim267BOT";
-                    const referralLink = `https://t.me/${botUsername}?start=${userId}`;
+    // تحديث عدد الإحالات (هذه قيمة ثابتة الآن)
+    const referralCountElement = document.getElementById("referral-count");
+    let referralCount = 0; // ابدأ بـ 0
+    referralCountElement.textContent = referralCount;
 
-                    // تحديث الرابط في HTML
-                    const referralAnchor = document.getElementById("referralLink");
-                    referralAnchor.href = referralLink;
-                    referralAnchor.textContent = referralLink;
+    // مثال لزيادة العدد (يمكنك تحديثها بناءً على الأحداث)
+    // referralCount++;
+    // referralCountElement.textContent = referralCount;
+</script>
 
-                    // جلب النقاط الحالية للمستخدم
-                    fetch(`https://example.com/api/get-score?userId=${userId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                document.getElementById("score").textContent = data.score;
-                            } else {
-                                alert('Failed to fetch score.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        });
-
-                    // إضافة وظيفة نسخ الرابط
-                    const copyButton = document.getElementById("copyButton");
-                    copyButton.addEventListener("click", function() {
-                        navigator.clipboard.writeText(referralLink).then(function() {
-                            alert("Referral link copied to clipboard!");
-                        }, function(err) {
-                            console.error('Could not copy text: ', err);
-                        });
-                    });
-
-                    // التحقق من استخدام رابط الإحالة وإضافة نقطة
-                    checkReferralLink(userId);
-                } else {
-                    alert("Unable to retrieve user ID. Please try again from Telegram.");
-                }
-            } else {
-                alert("Please open this page within Telegram Web App.");
-            }
-        };
-
-        // التحقق من استخدام رابط الإحالة وإضافة نقطة
-        function checkReferralLink(referrerId) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const referredId = urlParams.get('start');
-
-            if (referredId && referredId !== referrerId) {
-                // تحديث النقاط عبر API
-                fetch('https://example.com/api/add-point', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId: referrerId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('You have earned a point!');
-                        document.getElementById("score").textContent = data.newScore;
-                    } else {
-                        alert('Failed to add point.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-        }
-    </script>
 </body>
 </html>
