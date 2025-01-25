@@ -4,90 +4,74 @@
     <meta charset="UTF-8">
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referral Link Generator</title>
+    <title>Referral Link</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
+            text-align: center;
+            margin-top: 50px;
         }
         .container {
+            width: 90%;
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .box {
-            margin: 10px 0;
-        }
-        input[type="text"] {
-            width: 100%;
             padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin: 20px 0;
+            word-wrap: break-word;
+            font-size: 16px;
         }
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #007bff;
             color: #fff;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #45a049;
+        .button:hover {
+            background-color: #0056b3;
         }
         .count {
             font-size: 18px;
+            margin-top: 20px;
             font-weight: bold;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h2>Referral Link Generator</h2>
-    <div class="box">
-        <label>Your Referral Link:</label>
-        <input type="text" id="referral-link" readonly>
-        <button id="copy-btn">Copy</button>
+    <div class="container">
+        <h1>Your Referral Link</h1>
+        <div class="box" id="referralLink">Loading...</div>
+        <button class="button" onclick="copyLink()">Copy</button>
+        <div class="count">Invited Users: <span id="referralCount">0</span></div>
     </div>
-    <div class="box">
-        <label>Total Referrals:</label>
-        <p class="count" id="referral-count">0</p>
-    </div>
-</div>
 
-<script>
-    // استخراج معرف المستخدم تلقائيًا من الرابط
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get("start") || "default_user"; // إذا لم يكن هناك معرف، يتم استخدام "default_user"
+    <script>
+        // استخراج معرف المستخدم من الرابط
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId') || 'unknown';
 
-    // إنشاء رابط الإحالة
-    const referralLinkElement = document.getElementById("referral-link");
-    const referralLink = `https://t.me/hassansilim267BOT?start=${userId}`;
-    referralLinkElement.value = referralLink;
+        // إنشاء رابط الإحالة
+        const referralLink = `https://t.me/hassansilim267BOT?start=${userId}`;
+        document.getElementById('referralLink').textContent = referralLink;
 
-    // وظيفة النسخ
-    const copyButton = document.getElementById("copy-btn");
-    copyButton.addEventListener("click", () => {
-        referralLinkElement.select();
-        document.execCommand("copy");
-        alert("Referral link copied!");
-    });
+        // دالة لنسخ الرابط إلى الحافظة
+        function copyLink() {
+            navigator.clipboard.writeText(referralLink).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
 
-    // تحديث عدد الإحالات (قيمة ثابتة حالياً)
-    const referralCountElement = document.getElementById("referral-count");
-    let referralCount = 0; // ابدأ بـ 0
-    referralCountElement.textContent = referralCount;
-
-    // مثال لزيادة العدد بناءً على حدث معين
-    // referralCount++;
-    // referralCountElement.textContent = referralCount;
-</script>
-
+        // تحديث عدد المستخدمين المدعوين (للتجربة، الرقم ثابت هنا)
+        document.getElementById('referralCount').textContent = Math.floor(Math.random() * 100); // للتجربة فقط
+    </script>
 </body>
 </html>
