@@ -1,77 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referral Link</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        .container {
-            width: 90%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .box {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            margin: 20px 0;
-            word-wrap: break-word;
-            font-size: 16px;
-        }
-        .button {
-            display: inline-block;
-            margin: 10px 5px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        .count {
-            font-size: 18px;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Referral Link</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Your Referral Link</h1>
-        <div class="box" id="referralLink">Loading...</div>
-        <button class="button" onclick="copyLink()">Copy</button>
-        <div class="count">Invited Users: <span id="referralCount">0</span></div>
-    </div>
+  <h2>رابط الدعوة الخاص بك</h2>
+  <div>
+    <input type="text" id="referralLink" readonly style="width: 80%;" />
+    <button id="copyButton">Copy</button>
+  </div>
+  <h3>عدد الأشخاص الذين دعوتهم: <span id="referralCount">0</span></h3>
 
-    <script>
-        // استخراج معرف المستخدم من الرابط
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('userId') || 'unknown';
+  <script>
+    // تأكد من تحميل Telegram Web App
+    if (window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
 
-        // إنشاء رابط الإحالة
-        const referralLink = `https://t.me/hassansilim267BOT?start=${userId}`;
-        document.getElementById('referralLink').textContent = referralLink;
+      // تفعيل Telegram Web App
+      tg.ready();
 
-        // دالة لنسخ الرابط إلى الحافظة
-        function copyLink() {
-            navigator.clipboard.writeText(referralLink).then(() => {
-                alert('Link copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-            });
-        }
+      // الحصول على معرف المستخدم من Telegram Web App
+      const userId = tg.initDataUnsafe.user?.id || "unknown";
+      const botUsername = "@hassansilim267BOT"; // معرف البوت الخاص بك
+      const referralLink = `https://t.me/${botUsername}?start=${userId}`;
+      document.getElementById("referralLink").value = referralLink;
 
-        // تحديث عدد المستخدمين المدعوين (للتجربة، الرقم ثابت هنا)
-        document.getElementById('referralCount').textContent = Math.floor(Math.random() * 100); // للتجربة فقط
-    </script>
+      // نسخ الرابط عند الضغط على الزر
+      document.getElementById("copyButton").addEventListener("click", () => {
+        const linkInput = document.getElementById("referralLink");
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999); // للأجهزة المحمولة
+        document.execCommand("copy");
+        alert("تم نسخ الرابط!");
+      });
+
+      // تعيين عدد الدعوات (افتراضي = 0)
+      let referralCount = 0; // يمكن تحديثه من قاعدة بيانات إذا كنت تستخدم واحدة
+      document.getElementById("referralCount").innerText = referralCount;
+    } else {
+      alert("Telegram Web App is not available!");
+    }
+  </script>
 </body>
 </html>
