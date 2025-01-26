@@ -5,49 +5,115 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Referral Link</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      text-align: center;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #referral-link {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    #copy-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #copy-button:hover {
+      background-color: #45a049;
+    }
+
+    #referrals-count {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
 </head>
 <body>
-  <h2>رابط الدعوة الخاص بك</h2>
-  <div>
-    <input type="text" id="referralLink" readonly style="width: 80%;" />
-    <button id="copyButton">Copy</button>
+  <div class="container">
+    <h1>Your Referral Link</h1>
+    <input type="text" id="referral-link" readonly>
+    <button id="copy-button">Copy</button>
+    <p id="referrals-count">You have invited: <span id="referral-count">0</span> people</p>
   </div>
-  <h3>عدد الأشخاص الذين دعوتهم: <span id="referralCount">0</span></h3>
 
   <script>
-    // تأكد من تحميل Telegram Web App
-    if (window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
+    // Firebase configuration (replace with your actual Firebase config)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBekcFYAivjH934l0t0Z7bAILFcpghJ4Us",
+      authDomain: "trex-b4169.firebaseapp.com",
+      projectId: "trex-b4169",
+      storageBucket: "trex-b4169.firebasestorage.app",
+      messagingSenderId: "341755000409",
+      appId: "1:341755000409:web:2dd2922673392b47d4e348",
+      measurementId: "G-C5CMEE3W9E"
+    };
 
-      // تفعيل Telegram Web App
-      tg.ready();
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-      // الحصول على معرف المستخدم من Telegram Web App
-      const userId = tg.initDataUnsafe.user?.id || "unknown";
-      const botUsername = "hassansilim267BOT"; // معرف البوت الخاص بك
+    // Get user ID from Telegram bot (dynamic userId from URL)
+    const userId = new URLSearchParams(window.location.search).get('userId') || 'default_user';
 
-      // إزالة الـ@ من اسم المستخدم قبل إنشاء الرابط
-      const cleanUsername = botUsername.replace('@', ''); 
+    // Create the referral link with "startapp"
+    const referralLink = `https://t.me/hassansilim267BOT?startapp=${userId}`;
+    const referralLinkElement = document.getElementById("referral-link");
+    referralLinkElement.value = referralLink;
 
-      // إنشاء رابط الدعوة بدون الـ@
-      const referralLink = `https://t.me/${cleanUsername}?start=${userId}`;
-      document.getElementById("referralLink").value = referralLink;
+    // Copy link to clipboard
+    document.getElementById('copy-button').addEventListener('click', () => {
+      referralLinkElement.select();
+      document.execCommand('copy');
+      alert('Referral link copied to clipboard!');
+    });
 
-      // نسخ الرابط عند الضغط على الزر
-      document.getElementById("copyButton").addEventListener("click", () => {
-        const linkInput = document.getElementById("referralLink");
-        linkInput.select();
-        linkInput.setSelectionRange(0, 99999); // للأجهزة المحمولة
-        document.execCommand("copy");
-        alert("تم نسخ الرابط!");
-      });
+    // Firestore document reference
+    const docRef = db.collection("Trex").doc(userId);
 
-      // تعيين عدد الدعوات (افتراضي = 0)
-      let referralCount = 0; // يمكن تحديثه من قاعدة بيانات إذا كنت تستخدم واحدة
-      document.getElementById("referralCount").innerText = referralCount;
-    } else {
-      alert("Telegram Web App is not available!");
-    }
+    // Get referrals count from Firestore
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        document.getElementById('referral-count').textContent = data.referrals || 0;
+      } else {
+        // If no data exists, create a new document with initial referral count
+        docRef.set({
+          userId: userId,
+          referrals: 0 // Initial referral count
+        });
+      }
+    }).catch((error) => {
+      console.error("Error fetching document: ", error);
+    });
   </script>
 </body>
 </html>
