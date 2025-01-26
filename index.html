@@ -1,119 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Referral Link</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f4f4f4;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الإحالة لتطبيق Telegram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
 
-    .container {
-      text-align: center;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
 
-    #referral-link {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      text-align: center;
-    }
+        button {
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+        }
 
-    #copy-button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+        button:hover {
+            background-color: #006699;
+        }
 
-    #copy-button:hover {
-      background-color: #45a049;
-    }
+        .invited-users {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+        }
 
-    #referrals-count {
-      margin-top: 20px;
-      font-size: 18px;
-    }
-  </style>
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
+        .user {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #e0f7fa;
+            border-radius: 4px;
+        }
+
+        #statusMessage {
+            margin-top: 15px;
+            color: green;
+        }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Your Referral Link</h1>
-    <input type="text" id="referral-link" readonly>
-    <button id="copy-button">Copy</button>
-    <p id="referrals-count">You have invited: <span id="referral-count">0</span> people</p>
-  </div>
+    <div class="container">
+        <h1>مرحبًا بك في نظام الإحالة</h1>
+        <button id="inviteButton">دعوة صديق</button>
+        <p id="statusMessage"></p>
 
-  <script>
-    // Firebase configuration (replace with your actual Firebase config)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBekcFYAivjH934l0t0Z7bAILFcpghJ4Us",
-      authDomain: "trex-b4169.firebaseapp.com",
-      projectId: "trex-b4169",
-      storageBucket: "trex-b4169.firebasestorage.app",
-      messagingSenderId: "341755000409",
-      appId: "1:341755000409:web:2dd2922673392b47d4e348",
-      measurementId: "G-C5CMEE3W9E"
-    };
+        <div class="invited-users" id="invitedUsers">
+            <strong>المستخدمون المدعوون:</strong>
+        </div>
+    </div>
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const botUsername = 'hassansilim267BOT'; // اسم البوت
+            const invitedUsersContainer = document.getElementById('invitedUsers');
+            let userId = 'defaultUser'; // المعرّف الافتراضي
 
-    // Get user ID from Telegram bot (dynamic userId from URL)
-    const userId = new URLSearchParams(window.location.search).get('userId') || 'default_user';
+            // استخدام Telegram Web App API للحصول على معلومات المستخدم
+            if (window.Telegram.WebApp.initData) {
+                const initDataUnsafe = Telegram.WebApp.initDataUnsafe;
+                if (initDataUnsafe.user && initDataUnsafe.user.username) {
+                    userId = initDataUnsafe.user.username; // تعيين معرف المستخدم
+                }
+            }
 
-    // Create the referral link with "startapp"
-    const referralLink = `https://t.me/hassansilim267BOT?startapp=${userId}`;
-    const referralLinkElement = document.getElementById("referral-link");
-    referralLinkElement.value = referralLink;
+            const inviteLink = `https://t.me/${botUsername}?start=${userId}`; // بناء رابط الدعوة
 
-    // Copy link to clipboard
-    document.getElementById('copy-button').addEventListener('click', () => {
-      referralLinkElement.select();
-      document.execCommand('copy');
-      alert('Referral link copied to clipboard!');
-    });
+            // تحديث قائمة المستخدمين المدعوين
+            const updateInvitedUsers = (username) => {
+                const userElement = document.createElement('div');
+                userElement.className = 'user';
+                userElement.textContent = username;
+                invitedUsersContainer.appendChild(userElement);
+            };
 
-    // Firestore document reference
-    const docRef = db.collection("Trex").doc(userId);
+            // إذا تم تحديد معرف المستخدم، أضفه إلى القائمة
+            if (userId !== 'defaultUser') {
+                updateInvitedUsers(userId);
+            }
 
-    // Get referrals count from Firestore
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        document.getElementById('referral-count').textContent = data.referrals || 0;
-      } else {
-        // If no data exists, create a new document with initial referral count
-        docRef.set({
-          userId: userId,
-          referrals: 0 // Initial referral count
+            // عند النقر على زر الدعوة
+            document.getElementById('inviteButton').addEventListener('click', function () {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'انضم إلي في هذا التطبيق الرائع!',
+                        text: 'استخدم رابط الدعوة الخاص بي للانضمام:',
+                        url: inviteLink
+                    }).then(() => {
+                        document.getElementById('statusMessage').textContent = 'تمت مشاركة الرابط بنجاح!';
+                        document.getElementById('statusMessage').style.color = 'green';
+                    }).catch(() => {
+                        document.getElementById('statusMessage').textContent = 'حدث خطأ أثناء مشاركة الرابط.';
+                        document.getElementById('statusMessage').style.color = 'red';
+                    });
+                } else {
+                    navigator.clipboard.writeText(inviteLink).then(() => {
+                        document.getElementById('statusMessage').textContent = 'تم نسخ رابط الدعوة إلى الحافظة!';
+                        document.getElementById('statusMessage').style.color = 'green';
+                    }).catch(() => {
+                        document.getElementById('statusMessage').textContent = 'حدث خطأ أثناء نسخ الرابط.';
+                        document.getElementById('statusMessage').style.color = 'red';
+                    });
+                }
+            });
         });
-      }
-    }).catch((error) => {
-      console.error("Error fetching document: ", error);
-    });
-  </script>
+    </script>
 </body>
 </html>
