@@ -91,6 +91,10 @@
                 }
             }
 
+            // استخراج معرف المستخدم المدعو من الرابط (إذا كان موجودًا)
+            const urlParams = new URLSearchParams(window.location.search);
+            const referredUser = urlParams.get('start'); // الحصول على قيمة 'start' من الرابط
+
             const inviteLink = `https://t.me/${botUsername}?start=${userId}`; // بناء رابط الدعوة
 
             // تحديث قائمة المستخدمين المدعوين
@@ -101,9 +105,9 @@
                 invitedUsersContainer.appendChild(userElement);
             };
 
-            // إذا تم تحديد معرف المستخدم، أضفه إلى القائمة
-            if (userId !== 'defaultUser') {
-                updateInvitedUsers(userId);
+            // إذا تم تحديد المستخدم المدعو، أضفه إلى القائمة
+            if (referredUser) {
+                updateInvitedUsers(referredUser); // عرض اسم المستخدم المدعو
             }
 
             // عند النقر على زر الدعوة
